@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors"); // Assurez-vous d'installer le package CORS
-const sequelize = require('../services/config'); // Utilisez directement sequelize sans la destructuration
+const  { sequelize }  = require('../services/config'); // Utilisez directement sequelize sans la destructuration
 const app = express();
+
 const port = process.env.PORT || 3000; // Utilisation d'un port dynamique
 const etudiantRouter = require("../routes/crudetudiant"); // Mettre à jour le chemin si nécessaire
 

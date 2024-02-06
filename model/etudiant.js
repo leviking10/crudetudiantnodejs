@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../services/config'); // Importez Sequelize depuis votre fichier config
+const { sequelize } = require('../services/config');
 
 const Etudiant = sequelize.define('etudiant', {
     id: {

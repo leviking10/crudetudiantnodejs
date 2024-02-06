@@ -1,23 +1,25 @@
-const Etudiant = require('../model/etudiant'); //le chemin d'accès réel à votre modèle Sequelize
+const Etudiant = require('../model/etudiant'); // Assurez-vous que le chemin d'accès au modèle est correct
 const helper = require('../services/helper');
-const config = require('../services/config');
+const  { sequelize }  = require('../services/config');
 
-async function getMultiple(page = 1){
-    const offset = helper.getOffset(page, config.listPerPage);
+async function getEtudiants(page = 1) {
+    // Accès direct à listPerPage à partir de l'instance sequelize
+    const listPerPage = sequelize.options.define.listPerPage || 10; // Utilisation d'une valeur par défaut si non définie
+
+    const offset = helper.getOffset(page, listPerPage);
     const { count, rows } = await Etudiant.findAndCountAll({
         offset,
-        limit: config.listPerPage
+        limit: listPerPage
     });
     const data = helper.emptyOrRows(rows);
-    const meta = {page, totalPages: Math.ceil(count / config.listPerPage)};
+    const meta = { page, totalPages: Math.ceil(count / listPerPage) };
 
     return {
         data,
         meta
-    }
+    };
 }
-
-async function create(etudiant){
+async function create(etudiant) {
     try {
         const result = await Etudiant.create(etudiant);
         return { message: 'Etudiant created successfully', result };
@@ -26,16 +28,17 @@ async function create(etudiant){
     }
 }
 
-async function update(id, etudiant){
+async function update(id, etudiant) {
     try {
-        await Etudiant.update(etudiant, { where: { id: id } });
+        await Etudiant.update(etudiant, {
+            where: { id: id } });
         return { message: 'Etudiant updated successfully' };
     } catch (error) {
         return { message: 'Error in updating etudiant', error };
     }
 }
 
-async function remove(id){
+async function remove(id) {
     try {
         await Etudiant.destroy({ where: { id: id } });
         return { message: 'Etudiant deleted successfully' };
@@ -45,7 +48,7 @@ async function remove(id){
 }
 
 module.exports = {
-    getMultiple,
+    getEtudiants,
     create,
     update,
     remove

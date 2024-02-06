@@ -1,12 +1,13 @@
+// routes/crudetudiant.js
 const express = require('express');
 const router = express.Router();
-const Etudiant = require('../model/etudiant'); // Assurez-vous de mettre le chemin correct
+const etudiantService = require('../services/crudetudiant'); // Assurez-vous que le chemin d'accès est correct
 
 // GET - Récupérer la liste des étudiants
 router.get('/', async (req, res) => {
     try {
-        const etudiants = await Etudiant.findAll();
-        res.json(etudiants);
+        const { data, meta } = await etudiantService.getEtudiants(1); // Ajoutez la gestion de la pagination si nécessaire
+        res.json({ data, meta });
     } catch (error) {
         console.error('Error retrieving etudiants:', error);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -16,8 +17,8 @@ router.get('/', async (req, res) => {
 // POST - Créer un nouvel étudiant
 router.post('/', async (req, res) => {
     try {
-        const newEtudiant = await Etudiant.create(req.body);
-        res.status(201).json(newEtudiant);
+        const { message, result } = await etudiantService.create(req.body);
+        res.status(201).json({ message, result });
     } catch (error) {
         console.error('Error creating etudiant:', error);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -28,12 +29,8 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const [updatedRows] = await Etudiant.update(req.body, { where: { id: id } });
-        if (updatedRows === 0) {
-            res.status(404).json({ message: 'Etudiant not found' });
-        } else {
-            res.json({ message: 'Etudiant updated successfully' });
-        }
+        const { message } = await etudiantService.update(id, req.body);
+        res.json({ message });
     } catch (error) {
         console.error('Error updating etudiant:', error);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -44,12 +41,8 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const deletedRowCount = await Etudiant.destroy({ where: { id: id } });
-        if (deletedRowCount === 0) {
-            res.status(404).json({ message: 'Etudiant not found' });
-        } else {
-            res.json({ message: 'Etudiant deleted successfully' });
-        }
+        const { message } = await etudiantService.remove(id);
+        res.json({ message });
     } catch (error) {
         console.error('Error deleting etudiant:', error);
         res.status(500).json({ message: 'Internal Server Error' });
